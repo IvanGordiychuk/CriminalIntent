@@ -11,8 +11,12 @@ public class Crime {
 
     public Crime(){
         //Гернерация Id
-        mId=UUID.randomUUID();
-        mDate=new Date();
+       this(UUID.randomUUID());
+    }
+
+    public Crime(UUID id) {
+        mId = id;
+        mDate = new Date();
     }
 
     public boolean isSolved() {

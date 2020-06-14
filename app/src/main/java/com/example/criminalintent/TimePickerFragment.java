@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.DialogFragment;
 
 import java.util.Calendar;
@@ -28,6 +30,7 @@ public class TimePickerFragment extends DialogFragment {
         fragment.setArguments(args);
         return fragment;
     }
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -43,8 +46,8 @@ public class TimePickerFragment extends DialogFragment {
                 .inflate(R.layout.dialog_time,null);
 
         mTimePicker = (TimePicker) v.findViewById(R.id.dialog_time_picker);
-        mTimePicker.setCurrentHour(hour);
-        mTimePicker.setCurrentMinute(minute);
+        mTimePicker.setHour(hour);
+        mTimePicker.setMinute(minute);
 
 
         return new AlertDialog.Builder(getActivity())
@@ -55,13 +58,15 @@ public class TimePickerFragment extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         int hour = mTimePicker.getCurrentHour();
                         int minute = mTimePicker.getCurrentMinute();
-                        String timeCrime = "time: "+hour+":"+minute;
+                        Date timeCrime = new Date();
+                        timeCrime.setHours(hour);
+                        timeCrime.setMinutes(minute);
                        sendResult(Activity.RESULT_OK,timeCrime);
                     }
                 })
                 .create();
     }
-    private void sendResult(int resultCode, String time){
+    private void sendResult(int resultCode, Date time){
         if (getTargetFragment() == null){
             return;
         }

@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 // Create class CrimeFragment extends Fragment
@@ -29,6 +30,7 @@ public class CrimeFragment extends Fragment {
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "DialogDate";
     private static final String DIALOG_TIME = "DialogTime";
+    private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_TIME = 1;
     private Crime mCrime;
@@ -54,7 +56,12 @@ public class CrimeFragment extends Fragment {
         mCrime=CrimeLab.get(getActivity()).getCrime(crimeId);
 
     }
-
+    @Override
+    public void onPause(){
+        super.onPause();
+        CrimeLab.get(getActivity())
+                .updateCrime(mCrime);
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -68,18 +75,26 @@ public class CrimeFragment extends Fragment {
             Date date = (Date) data
                     .getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setDate(date);
-            mDateButton.setText(DateFormat.getDateInstance(DateFormat.FULL).format(mCrime.getDate()));
+           // mDateButton.setText(DateFormat.getDateInstance(DateFormat.FULL).format(mCrime.getDate()));
             updateDate();
         }
         if (requestCode ==REQUEST_TIME){
-            String time=(String) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
-            mTimeButton.setText(time);
+            Date time=(Date) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
+            Log.i(TAG,time.getHours()+time.getMinutes()+" time");
+            mCrime.setDate(time);
+          // mTimeButton.setText(mCrime.getDate().getHours()+" Hours "+mCrime.getDate().getMinutes()+" Minutes");
+           updateTime();
         }
     }
 
     private void updateDate() {
         Log.i(TAG,"updateDate");
         mDateButton.setText(DateFormat.getDateInstance(DateFormat.FULL).format(mCrime.getDate()));
+
+    }
+    private void updateTime(){
+        Log.i(TAG,"updateTime");
+        mTimeButton.setText(timeFormat.format(mCrime.getDate()));;
     }
 
     //
@@ -125,6 +140,7 @@ public class CrimeFragment extends Fragment {
         //обработка кнопки вермени
         mTimeButton=(Button) v.findViewById(R.id.crime_time);
         mTimeButton.setText("time");
+        updateTime();
         mTimeButton.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -146,9 +162,7 @@ public class CrimeFragment extends Fragment {
                 mCrime.setSolved(isChecked);
             }
         });
-        //кнопки первой и последней Crime
 
-        //Intent
 
 
 
